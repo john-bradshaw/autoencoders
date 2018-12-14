@@ -41,7 +41,7 @@ class IndependentGaussianDistribution(ShallowDistributions):
         split_point = params.shape[-1] // 2
         return params[..., :split_point], params[..., split_point:]
 
-    def sample_via_reparam(self, num_samples: int=1)  -> torch.Tensor:
+    def sample_via_reparam(self, num_samples: int=1) -> torch.Tensor:
         mean, log_var = self.mean_log_var
         std_dev = torch.exp(0.5 * log_var)
 
