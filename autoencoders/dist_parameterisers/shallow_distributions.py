@@ -47,6 +47,8 @@ class IndependentGaussianDistribution(ShallowDistributions):
 
         samples = mean.unsqueeze(1) + torch.randn(log_var.shape[0], num_samples, *log_var.shape[1:],
                                      dtype=std_dev.dtype, device=std_dev.device) * std_dev.unsqueeze(1)
+
+        samples = list(samples.transpose(0, 1).unbind(dim=0))
         return samples
 
     def mode(self) -> torch.Tensor:
@@ -94,7 +96,9 @@ class BernoulliOnLogits(ShallowDistributions):
     def sample_no_grad(self, num_samples: int = 1) -> torch.Tensor:
         params = self._params
         params = params.unsqueeze(1).repeat(1, num_samples, *[1 for _ in params.shape[1:]])
-        return torch.bernoulli(params)
+        samples = torch.bernoulli(params)
+        samples = list(samples.transpose(0, 1).unbind(dim=0))
+        return samples
 
     def mode(self) -> torch.Tensor:
         params = self._params

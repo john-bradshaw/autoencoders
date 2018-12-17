@@ -55,7 +55,7 @@ class VAE(nn.Module):
 
     def elbo(self, x, beta=1.):
         self.encoder.update(x)
-        z_sample = self.encoder.sample_via_reparam(1).squeeze(1)
+        z_sample = self.encoder.sample_via_reparam(1)[0]
 
         self.decoder.update(z_sample)
         log_like = -self.decoder.nlog_like_of_obs(x)
@@ -88,19 +88,19 @@ class VAE(nn.Module):
 
     def sample_from_prior_no_grad(self, sample_x=False):
         with torch.no_grad():
-            z = self.latent_prior.sample_no_grad(1).squeeze(1)
+            z = self.latent_prior.sample_no_grad(1)[0]
             x = self.decode_from_z_no_grad(z, sample_x)
         return x
 
     def decode_from_z_no_grad(self, z, sample_x=False):
         with torch.no_grad():
             self.decoder.update(z)
-            x = self.decoder.sample_no_grad(1).squeeze(1) if sample_x else self.decoder.mode()
+            x = self.decoder.sample_no_grad(1)[0] if sample_x else self.decoder.mode()
         return x
 
     def _run_through_to_z(self, x, sample_z=False):
         self.encoder.update(x)
-        z = self.encoder.sample_no_grad(1).squeeze(1) if sample_z else self.encoder.mode()
+        z = self.encoder.sample_no_grad(1)[0] if sample_z else self.encoder.mode()
         return z
 
 
