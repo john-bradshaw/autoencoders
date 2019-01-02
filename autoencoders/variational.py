@@ -67,11 +67,11 @@ class VAE(nn.Module):
             elbo += beta * kl_term
 
             if self._tb_logger is not None:
-                self.tb_logger.add_scalar('kl_term(no_beta)', kl_term)
+                self._tb_logger.add_scalar('neg_kl_(no_beta)(smaller_better)', kl_term.mean().item())
 
         if self._tb_logger is not None:
-            self.tb_logger.add_scalar('reconstruction_term', log_like)
-            self.tb_logger.add_scalar('elbo', elbo)
+            self._tb_logger.add_scalar('reconstruction_term(larger_better)', log_like.mean().item())
+            self._tb_logger.add_scalar('elbo(larger_better)', elbo.mean().item())
         return elbo
 
     def reconstruct_no_grad(self, x, sample_z=False, sample_x=False):
