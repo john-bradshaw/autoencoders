@@ -34,13 +34,6 @@ class IndependentGaussianDistribution(ShallowDistributions):
     mean parameterised by the first half of parameters in final dimension. The log of the variance by the second half.
 
     """
-
-    @property
-    def mean_log_var(self):
-        params = self._params
-        split_point = params.shape[-1] // 2
-        return params[..., :split_point], params[..., split_point:]
-
     def sample_via_reparam(self, num_samples: int=1) -> torch.Tensor:
         mean, log_var = self.mean_log_var
         std_dev = torch.exp(0.5 * log_var)
@@ -50,6 +43,12 @@ class IndependentGaussianDistribution(ShallowDistributions):
 
         samples = list(samples.transpose(0, 1).unbind(dim=0))
         return samples
+
+    @property
+    def mean_log_var(self):
+        params = self._params
+        split_point = params.shape[-1] // 2
+        return params[..., :split_point], params[..., split_point:]
 
     def mode(self) -> torch.Tensor:
         mean, _ = self.mean_log_var
