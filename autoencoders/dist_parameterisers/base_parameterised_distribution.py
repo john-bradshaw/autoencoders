@@ -24,14 +24,14 @@ class BaseParameterisedDistribution(nn.Module, metaclass=abc.ABCMeta):
         else:
             return self.mode()
 
-    def sample_via_reparam(self, num_samples: int=1) -> torch.Tensor:
+    def sample_via_reparam(self, num_samples: int=1) -> list:
         """
         Samples this distribution using re-paramterisation trick
-        :return: num_samples samples for each member in batch size [b, num_samples, *sample.shape]
+        :return: num_samples samples for in a list [ (b,*sample.shape), ...]
         """
         raise NotImplementedError
 
-    def sample_no_grad(self, num_samples: int=1) -> torch.Tensor:
+    def sample_no_grad(self, num_samples: int=1) -> list:
         """
         Samples this distribution with no gradients flowing back.
         """

@@ -21,6 +21,7 @@ class ShallowDistributions(BaseParameterisedDistribution):
         """
         super().__init__()
         self._params = parameterisation
+        self._tb_logger = None
 
     def update(self, x):
         self._params = x
@@ -37,7 +38,9 @@ class IndependentGaussianDistribution(ShallowDistributions):
     def sample_via_reparam(self, num_samples: int=1) -> torch.Tensor:
         mean, log_var = self.mean_log_var
         std_dev = torch.exp(0.5 * log_var)
-
+        if self._tb_logger is not None:
+            self._tb_logger.add_histogram('z_mean', mean.detach().cpu().numpy())
+            self._tb_logger.add_histogram('z_std', std_dev.detach().cpu().numpy())
         samples = mean.unsqueeze(1) + torch.randn(log_var.shape[0], num_samples, *log_var.shape[1:],
                                      dtype=std_dev.dtype, device=std_dev.device) * std_dev.unsqueeze(1)
 
