@@ -44,11 +44,12 @@ class WAEnMMD(base_ae.SingleLatentWithPriorAE):
                 decoder: BaseParameterisedDistribution,
                 latent_prior: BaseParameterisedDistribution,
                 kernel: similarity_funcs.BaseSimilarityFunctions,
+                c_function: similarity_funcs.SquaredEuclideanDistSimilarity()=None
                 ):
         super().__init__(encoder, decoder, latent_prior)
 
         self.kernel = kernel
-        self.c_function = similarity_funcs.SquaredEuclideanDistSimilarity()
+        self.c_function = similarity_funcs.SquaredEuclideanDistSimilarity() if c_function is None else c_function
 
     def forward(self, x, lambda_):
         """
