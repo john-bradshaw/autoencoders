@@ -3,6 +3,7 @@ import typing
 import torch
 from torch import nn
 
+from autoencoders import similarity_funcs
 from autoencoders.dist_parameterisers.base_parameterised_distribution import T
 from . import base_parameterised_distribution
 from . import shallow_distributions
@@ -45,3 +46,10 @@ class NNParamterisedDistribution(base_parameterised_distribution.BaseParameteris
     def nlog_like_of_obs(self, obs: torch.Tensor) -> torch.Tensor:
         shallow_dist = self.shallow_dist
         return shallow_dist.nlog_like_of_obs(obs)
+
+    def convolve_with_function(self, obs: torch.Tensor,
+                               function: similarity_funcs.BaseSimilarityFunctions) -> torch.Tensor:
+        shallow_dist = self.shallow_dist
+        return shallow_dist.convolve_with_function(obs, function)
+
+

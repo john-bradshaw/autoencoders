@@ -1,9 +1,13 @@
 
 import abc
+import enum
 import typing
 
 import torch
 from torch import nn
+from torch.nn import functional as F
+
+from .. import similarity_funcs
 
 T = typing.TypeVar('T', bound='BaseParameterisedDistribution')
 
@@ -59,3 +63,8 @@ class BaseParameterisedDistribution(nn.Module, metaclass=abc.ABCMeta):
         """
         raise NotImplementedError
 
+    def convolve_with_function(self, obs: torch.Tensor, function: similarity_funcs.BaseSimilarityFunctions) -> torch.Tensor:
+        """
+        Compute the expected value of a function with the observation as its first argument under this distribution
+        """
+        raise NotImplementedError
