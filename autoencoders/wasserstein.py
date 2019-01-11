@@ -68,15 +68,15 @@ class WAEnMMD(base_ae.SingleLatentWithPriorAE):
         obj = -expected_cost
 
         if lambda_ != 0.:
-            samples_from_latent_prior = torch.cat(self.latent_prior.sample_no_grad(num_samples=x.shape[0]))
+            samples_from_latent_prior = torch.cat(self.latent_prior.sample_no_grad(num_samples=z_sample.shape[0]))
             divergence_term = similarity_funcs.estimate_mmd(self.kernel, z_sample, samples_from_latent_prior)
-            obj += -lambda_*divergence_term
+            obj += -lambda_*divergence_term  # nb note that this is a scalar, we're just gonna share across each term.
 
             if self._tb_logger is not None:
                 self._tb_logger.add_scalar('divergence_term(no_lambda)(smaller_better)', divergence_term.mean().item())
 
         if self._tb_logger is not None:
-            self._tb_logger.add_scalar('reconstruction_term(larger_better)', expected_cost.mean().item())
+            self._tb_logger.add_scalar('reconstruction_term(smaller_better)', expected_cost.mean().item())
             self._tb_logger.add_scalar('wae_objective(larger_better)', obj.mean().item())
 
         return obj
