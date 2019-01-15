@@ -50,6 +50,7 @@ class WAEnMMD(base_ae.SingleLatentWithPriorAE):
 
         self.kernel = kernel
         self.c_function = similarity_funcs.SquaredEuclideanDistSimilarity() if c_function is None else c_function
+        self._last_z_sample_on_obj = None
 
     def forward(self, x, lambda_):
         """
@@ -60,6 +61,7 @@ class WAEnMMD(base_ae.SingleLatentWithPriorAE):
     def objective_to_maximise(self, x, lambda_=1.):
         self.encoder.update(x)
         z_sample = self.encoder.sample_via_reparam(1)[0]
+        self._last_z_sample_on_obj = z_sample
 
         self.decoder.update(z_sample)
 
