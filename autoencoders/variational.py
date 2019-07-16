@@ -38,9 +38,9 @@ class VAE(base_ae.SingleLatentWithPriorAE):
         """
         convenience function calculates the ELBO term
         """
-        return self.elbo(x, beta)
+        return self.elbo(x, beta, return_extra_vals=False)
 
-    def elbo(self, x, beta=1.):
+    def elbo(self, x, beta=1., return_extra_vals=False):
         self.encoder.update(x)
         z_sample = self.encoder.sample_via_reparam(1)[0]
 
@@ -49,14 +49,23 @@ class VAE(base_ae.SingleLatentWithPriorAE):
 
         elbo = log_like
 
+        collect_extra_stats = self._collect_extra_stats_flag
+        if collect_extra_stats:
+            extra_statistics = {
+                'reconstruction_term(larger_better)': log_like.mean().item(),
+                'batchsize': elbo.shape[0]
+            }
+
+
         if beta != 0.:
             kl_term = -self.encoder.kl_with_other(self.latent_prior)
             elbo += beta * kl_term
 
-            if self._tb_logger is not None:
-                self._tb_logger.add_scalar('neg_kl_(no_beta)(larger_better)', kl_term.mean().item())
+            if collect_extra_stats:
+                extra_statistics['neg_kl_(no_beta)(larger_better)'] = kl_term.mean().item()
 
-        if self._tb_logger is not None:
-            self._tb_logger.add_scalar('reconstruction_term(larger_better)', log_like.mean().item())
-            self._tb_logger.add_scalar('elbo(larger_better)', elbo.mean().item())
+        if collect_extra_stats:
+            extra_statistics['elbo(larger_better)'] = log_like.mean().item()
+            self._logger_manager.add_statistics(extra_statistics)
         return elbo
+

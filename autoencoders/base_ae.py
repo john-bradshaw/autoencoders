@@ -1,20 +1,32 @@
 
+import typing
+
 import torch
 from torch import nn
 
 from .dist_parameterisers.base_parameterised_distribution import BaseParameterisedDistribution
+from . import logging_tools
 
 
 class SingleLatentWithPriorAE(nn.Module):
     def __init__(self,
                  encoder: BaseParameterisedDistribution,
                  decoder: BaseParameterisedDistribution,
-                 latent_prior: BaseParameterisedDistribution):
+                 latent_prior: BaseParameterisedDistribution,
+                 logger: typing.Optional[logging_tools.LogHelper]=None
+                 ):
         super().__init__()
         self.encoder = encoder
         self.decoder = decoder
         self.latent_prior = latent_prior
-        self._tb_logger = None
+
+        if logger is None:
+            logger = logging_tools.LogHelper([])
+        self._logger_manager = logger
+
+    @property
+    def _collect_extra_stats_flag(self):
+       return self._logger_manager is not None and self._logger_manager.should_run_collect_extra_statistics()
 
     def forward(self, x, beta):
         raise NotImplementedError

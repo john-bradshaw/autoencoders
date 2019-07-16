@@ -69,17 +69,26 @@ class WAEnMMD(base_ae.SingleLatentWithPriorAE):
 
         obj = -expected_cost
 
+        collect_extra_stats = self._collect_extra_stats_flag
+        if collect_extra_stats:
+            extra_statistics = {}
+
+
         if lambda_ != 0.:
             samples_from_latent_prior = torch.cat(self.latent_prior.sample_no_grad(num_samples=z_sample.shape[0]))
             divergence_term = similarity_funcs.estimate_mmd(self.kernel, z_sample, samples_from_latent_prior)
             obj += -lambda_*divergence_term  # nb note that this is a scalar, we're just gonna share across each term.
 
-            if self._tb_logger is not None:
-                self._tb_logger.add_scalar('divergence_term(no_lambda)(smaller_better)', divergence_term.mean().item())
+            if collect_extra_stats:
+                extra_statistics['divergence_term(no_lambda)(smaller_better)'] = divergence_term.mean().item()
 
-        if self._tb_logger is not None:
-            self._tb_logger.add_scalar('reconstruction_term(smaller_better)', expected_cost.mean().item())
-            self._tb_logger.add_scalar('wae_objective(larger_better)', obj.mean().item())
+        if collect_extra_stats:
+            extra_statistics.update({
+                'reconstruction_term(larger_better)': expected_cost.mean().item(),
+                'wae_objective(larger_better)': obj.mean().item(),
+                'batchsize': expected_cost.shape[0]
+            })
+            self._logger_manager.add_statistics(extra_statistics)
 
         return obj
 

@@ -27,7 +27,7 @@ class NNParamterisedDistribution(base_parameterised_distribution.BaseParameteris
         self.shallow_dist.update(self._net_out)
         return self
 
-    def sample_via_reparam(self, num_samples: int = 1) -> torch.Tensor:
+    def sample_via_reparam(self, num_samples: int = 1) -> list:
         shallow_dist = self.shallow_dist
         return shallow_dist.sample_via_reparam(num_samples)
 
@@ -35,7 +35,7 @@ class NNParamterisedDistribution(base_parameterised_distribution.BaseParameteris
         shallow_dist = self.shallow_dist
         return shallow_dist.mode()
 
-    def sample_no_grad(self, num_samples: int = 1) -> torch.Tensor:
+    def sample_no_grad(self, num_samples: int = 1) -> list:
         shallow_dist = self.shallow_dist
         return shallow_dist.sample_no_grad(num_samples)
 

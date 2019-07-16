@@ -71,7 +71,7 @@ class IndependentGaussianDistribution(ShallowDistributions):
         super().__init__(parameterisation)
         self.fixed_logvar_value = fixed_logvar_value
 
-    def sample_via_reparam(self, num_samples: int=1) -> torch.Tensor:
+    def sample_via_reparam(self, num_samples: int=1) -> list:
         mean, log_var = self.mean_log_var
         std_dev = torch.exp(0.5 * log_var)
         if self._tb_logger is not None:
@@ -138,7 +138,7 @@ class BernoulliOnLogits(ShallowDistributions):
     def sample_via_reparam(self, num_samples: int = 1) -> torch.Tensor:
         raise RuntimeError("Reparameterisation trick not applicable for Bernoulli distribution")
 
-    def sample_no_grad(self, num_samples: int = 1) -> torch.Tensor:
+    def sample_no_grad(self, num_samples: int = 1) -> list:
         params = self._params
         params = params.unsqueeze(1).repeat(1, num_samples, *[1 for _ in params.shape[1:]])
         samples = torch.bernoulli(params)

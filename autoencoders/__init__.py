@@ -8,3 +8,4 @@ from . import similarity_funcs
 from . import wasserstein
 from . import base_ae
 from . import ae_utils
+from .logging_tools import *
