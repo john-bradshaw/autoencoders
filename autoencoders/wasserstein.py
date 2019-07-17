@@ -80,13 +80,13 @@ class WAEnMMD(base_ae.SingleLatentWithPriorAE):
             obj += -lambda_*divergence_term  # nb note that this is a scalar, we're just gonna share across each term.
 
             if collect_extra_stats:
-                extra_statistics['divergence_term(no_lambda)(smaller_better)'] = divergence_term.mean().item()
+                extra_statistics['sum-divergence_term(no_lambda)(smaller_better)'] = divergence_term.sum().item()
 
         if collect_extra_stats:
             extra_statistics.update({
-                'reconstruction_term(larger_better)': expected_cost.mean().item(),
-                'wae_objective(larger_better)': obj.mean().item(),
-                'batchsize': expected_cost.shape[0]
+                'sum-reconstruction_term(larger_better)': expected_cost.sum().item(),
+                'sum-wae_objective(larger_better)': obj.sum().item(),
+                'raw-batchsize': expected_cost.shape[0]
             })
             self._logger_manager.add_statistics(extra_statistics)
 

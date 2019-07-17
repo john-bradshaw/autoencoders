@@ -52,8 +52,8 @@ class VAE(base_ae.SingleLatentWithPriorAE):
         collect_extra_stats = self._collect_extra_stats_flag
         if collect_extra_stats:
             extra_statistics = {
-                'reconstruction_term(larger_better)': log_like.mean().item(),
-                'batchsize': elbo.shape[0]
+                'sum-reconstruction_term(larger_better)': log_like.sum().item(),
+                'raw-batchsize': elbo.shape[0]
             }
 
 
@@ -62,10 +62,10 @@ class VAE(base_ae.SingleLatentWithPriorAE):
             elbo += beta * kl_term
 
             if collect_extra_stats:
-                extra_statistics['neg_kl_(no_beta)(larger_better)'] = kl_term.mean().item()
+                extra_statistics['sum-neg_kl_(no_beta)(larger_better)'] = kl_term.sum().item()
 
         if collect_extra_stats:
-            extra_statistics['elbo(larger_better)'] = log_like.mean().item()
+            extra_statistics['sum-elbo(larger_better)'] = log_like.sum().item()
             self._logger_manager.add_statistics(extra_statistics)
         return elbo
 
