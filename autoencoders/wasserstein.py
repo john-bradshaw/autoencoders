@@ -84,7 +84,7 @@ class WAEnMMD(base_ae.SingleLatentWithPriorAE):
 
         if collect_extra_stats:
             extra_statistics.update({
-                'sum-reconstruction_term(larger_better)': expected_cost.sum().item(),
+                'sum-reconstruction_term(smaller_better)': expected_cost.sum().item(),
                 'sum-wae_objective(larger_better)': obj.sum().item(),
                 'raw-batchsize': expected_cost.shape[0]
             })
