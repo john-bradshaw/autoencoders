@@ -1,5 +1,5 @@
 
-import abc
+import warnings
 
 import torch
 from torch import nn
@@ -21,10 +21,16 @@ def square_distance_matrix_between_tensors(x1, x2):
 
 
 def estimate_mmd(similarity_func, x1, x2):
-    x1_term = off_diagional_similarity_matrix_mean(similarity_func, x1)
-    x2_term = off_diagional_similarity_matrix_mean(similarity_func, x2)
-    x1_x2_terms = similarity_func.similarity_matrix(x1, x2).mean()
-    return x1_term + x2_term - 2 * x1_x2_terms
+    assert x1.shape[0] == x2.shape[0]
+    if x1.shape[0] == 1:
+        warnings.warn("Computing MMD with only 1 example! (are you sure you meant to do this?)")
+        return -2 * similarity_func.similarity_matrix(x1, x2).mean()
+    else:
+        x1_term = off_diagional_similarity_matrix_mean(similarity_func, x1)
+        x2_term = off_diagional_similarity_matrix_mean(similarity_func, x2)
+        x1_x2_terms = similarity_func.similarity_matrix(x1, x2).mean()
+        return x1_term + x2_term - 2 * x1_x2_terms
+
 
 def off_diagional_similarity_matrix_mean(similarity_func, x):
     num_off_diagonal_terms = x.shape[0] * (x.shape[0] - 1)
