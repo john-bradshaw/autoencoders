@@ -24,6 +24,8 @@ class SingleLatentWithPriorAE(nn.Module):
             logger = logging_tools.LogHelper([])
         self._logger_manager = logger
 
+        self._reconstruction_z = None
+
     @property
     def _collect_extra_stats_flag(self):
        return self._logger_manager is not None and self._logger_manager.should_run_collect_extra_statistics()
@@ -34,6 +36,7 @@ class SingleLatentWithPriorAE(nn.Module):
     def reconstruct_no_grad(self, x, sample_z=False, sample_x=False):
         with torch.no_grad():
             z = self._run_through_to_z(x, sample_z)
+            self._reconstruction_z = z
             x = self.decode_from_z_no_grad(z, sample_x)
         return x
 
@@ -58,4 +61,5 @@ class SingleLatentWithPriorAE(nn.Module):
     def _run_through_to_z(self, x, sample_z=False):
         self.encoder.update(x)
         z = self.encoder.sample_no_grad(1)[0] if sample_z else self.encoder.mode()
+
         return z

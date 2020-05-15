@@ -62,6 +62,7 @@ class WAEnMMD(base_ae.SingleLatentWithPriorAE):
         self.encoder.update(x)
         z_sample = self.encoder.sample_via_reparam(1)[0]
         self._last_z_sample_on_obj = z_sample
+        # todo: move this property to base class
 
         self.decoder.update(z_sample)
 
