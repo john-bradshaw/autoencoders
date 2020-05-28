@@ -43,6 +43,7 @@ class VAE(base_ae.SingleLatentWithPriorAE):
     def elbo(self, x, beta=1., return_extra_vals=False):
         self.encoder.update(x)
         z_sample = self.encoder.sample_via_reparam(1)[0]
+        self._last_z_sample_on_obj = z_sample
 
         self.decoder.update(z_sample)
         log_like = -self.decoder.nlog_like_of_obs(x)
@@ -53,7 +54,8 @@ class VAE(base_ae.SingleLatentWithPriorAE):
         if collect_extra_stats:
             extra_statistics = {
                 'sum-reconstruction_term(larger_better)': log_like.sum().item(),
-                'raw-batchsize': elbo.shape[0]
+                'raw-batchsize': elbo.shape[0],
+                'raw-beta': float(beta)
             }
 
 
